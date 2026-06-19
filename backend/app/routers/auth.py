@@ -13,8 +13,8 @@ from ..database import get_db
 
 router = APIRouter()
 
-# Shared cookie settings — secure=True in production (HTTPS)
-_COOKIE = dict(httponly=True, samesite="lax", secure=False, path="/")
+# SameSite=none + Secure=True required for cross-origin cookies (Vercel → Render)
+_COOKIE = dict(httponly=True, samesite="none", secure=True, path="/")
 
 
 def _set_auth_cookies(response: Response, username: str) -> None:
