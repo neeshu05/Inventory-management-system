@@ -6,13 +6,13 @@ import Icon from '../components/Icon'
 
 function StatCard({ label, value, icon, iconBg, iconColor, valueColor = 'text-on-surface' }) {
   return (
-    <div className="card p-6 flex items-center gap-4">
-      <div className={`w-12 h-12 ${iconBg} rounded-lg flex items-center justify-center shrink-0`}>
-        <Icon name={icon} fill size={24} className={iconColor} />
+    <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+      <div className={`w-10 h-10 md:w-12 md:h-12 ${iconBg} rounded-lg flex items-center justify-center shrink-0`}>
+        <Icon name={icon} fill size={20} className={iconColor} />
       </div>
-      <div>
-        <p className="text-xs font-semibold text-outline uppercase tracking-wider">{label}</p>
-        <h3 className={`text-[28px] font-bold leading-none mt-1 ${valueColor}`}>{value}</h3>
+      <div className="min-w-0">
+        <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">{label}</p>
+        <h3 className={`text-[22px] md:text-[28px] font-bold leading-none mt-1 ${valueColor}`}>{value}</h3>
       </div>
     </div>
   )
@@ -218,7 +218,7 @@ export default function Dashboard() {
   const lowStockPages  = Math.ceil(lowStockTotal / LOW_STOCK_PAGE) || 1
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8">
       {/* Page header */}
       <div>
         <h2 className="text-display-md font-bold text-on-surface">Dashboard</h2>
@@ -226,7 +226,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard label="Total Products"  value={stats?.total_products ?? 0}  icon="inventory_2"    iconBg="bg-primary/10"             iconColor="text-primary" />
         <StatCard label="Low Stock"       value={lowStockCount}                icon="warning"        iconBg="bg-tertiary/10"            iconColor="text-tertiary"   valueColor="text-tertiary" />
         <StatCard label="Out of Stock"    value={outOfStockCount}              icon="block"          iconBg="bg-error-container/40"     iconColor="text-error"      valueColor="text-error" />
@@ -236,7 +236,7 @@ export default function Dashboard() {
       {/* Low stock alerts */}
       {totalLowStock > 0 && (
         <div className="card overflow-hidden">
-          <div className="px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+          <div className="px-4 md:px-6 py-4 border-b border-outline-variant flex items-center justify-between gap-3 flex-wrap">
             <h3 className="text-[17px] font-semibold text-on-surface">Low Stock Alerts</h3>
             <div className="flex items-center gap-3">
               <span className="badge-amber">{totalLowStock} items need attention</span>
@@ -253,36 +253,58 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="overflow-x-auto custom-scrollbar relative">
+          <div className="relative">
             <div className={`transition-opacity duration-150 ${lowStockPaging ? 'opacity-40' : 'opacity-100'}`}>
-              <table className="w-full">
-                <thead className="bg-surface-container-low">
-                  <tr>
-                    <th className="table-th">SKU</th>
-                    <th className="table-th">Product Name</th>
-                    <th className="table-th">Unit Price</th>
-                    <th className="table-th">Stock Level</th>
-                    <th className="table-th">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-outline-variant">
-                  {lowStockItems.map((p) => (
-                    <tr key={p.id} className="hover:bg-surface-container-lowest transition-colors">
-                      <td className="table-td font-semibold text-outline">{p.sku}</td>
-                      <td className="table-td font-semibold text-on-surface">{p.name}</td>
-                      <td className="table-td">₹{p.price.toFixed(2)}</td>
-                      <td className={`table-td font-bold ${p.quantity === 0 ? 'text-error' : 'text-on-surface'}`}>
-                        {p.quantity} units
-                      </td>
-                      <td className="table-td">
-                        {p.quantity === 0
-                          ? <span className="badge-red">Out of Stock</span>
-                          : <span className="badge-amber">Low Stock</span>}
-                      </td>
+              {/* Mobile card list */}
+              <div className="block sm:hidden divide-y divide-outline-variant">
+                {lowStockItems.map((p) => (
+                  <div key={p.id} className="px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-on-surface text-sm truncate">{p.name}</p>
+                      <p className="text-xs font-mono text-outline">{p.sku}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`text-sm font-bold ${p.quantity === 0 ? 'text-error' : 'text-on-surface'}`}>
+                        {p.quantity}u
+                      </span>
+                      {p.quantity === 0
+                        ? <span className="badge-red">Out</span>
+                        : <span className="badge-amber">Low</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto custom-scrollbar">
+                <table className="w-full">
+                  <thead className="bg-surface-container-low">
+                    <tr>
+                      <th className="table-th">SKU</th>
+                      <th className="table-th">Product Name</th>
+                      <th className="table-th">Unit Price</th>
+                      <th className="table-th">Stock Level</th>
+                      <th className="table-th">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant">
+                    {lowStockItems.map((p) => (
+                      <tr key={p.id} className="hover:bg-surface-container-lowest transition-colors">
+                        <td className="table-td font-semibold text-outline">{p.sku}</td>
+                        <td className="table-td font-semibold text-on-surface">{p.name}</td>
+                        <td className="table-td">₹{p.price.toFixed(2)}</td>
+                        <td className={`table-td font-bold ${p.quantity === 0 ? 'text-error' : 'text-on-surface'}`}>
+                          {p.quantity} units
+                        </td>
+                        <td className="table-td">
+                          {p.quantity === 0
+                            ? <span className="badge-red">Out of Stock</span>
+                            : <span className="badge-amber">Low Stock</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
             {lowStockPaging && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -322,17 +344,17 @@ export default function Dashboard() {
       )}
 
       {/* Bottom — chart + quick stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Chart */}
         <div className="lg:col-span-2 card p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div>
               <h3 className="text-[17px] font-semibold text-on-surface">
                 {chartMode === 'orders' ? 'Orders' : 'Revenue'} · {trends?.week_label ?? '—'}
               </h3>
               <p className="text-xs text-outline mt-0.5">{weekLabel} · Mon – Sun</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {/* Week navigation */}
               <div className="flex items-center border border-outline-variant rounded-lg overflow-hidden">
                 <button

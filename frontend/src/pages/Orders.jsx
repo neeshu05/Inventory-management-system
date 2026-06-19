@@ -130,7 +130,7 @@ function CreateOrderForm({ onSubmit, onCancel, saving }) {
 function OrderDetailView({ order }) {
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
         {[
           { label: 'Order ID', value: `#${order.id}`, mono: true },
           { label: 'Status',   value: <StatusBadge status={order.status} /> },
@@ -316,63 +316,66 @@ export default function Orders() {
   const tableLoading = loading || (isSearchMode && searchLoading && searchResults === null)
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-display-md font-bold text-on-surface">Orders</h2>
-          <p className="text-sm text-on-surface-variant mt-1">View and manage all customer orders and fulfillment status.</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-display-md font-bold text-on-surface truncate">Orders</h2>
+          <p className="text-sm text-on-surface-variant mt-0.5 hidden sm:block">View and manage all customer orders and fulfillment status.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="btn-secondary" onClick={() => setShowImport(true)}>
-            <Icon name="upload_file" size={18} /> Import CSV
+        <div className="flex items-center gap-2 shrink-0">
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={() => setShowImport(true)}>
+            <Icon name="upload_file" size={18} />
+            <span className="hidden sm:inline">Import CSV</span>
           </button>
-          <button className="btn-secondary" onClick={handleExport} disabled={exporting}>
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={handleExport} disabled={exporting}>
             {exporting ? <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" /> : <Icon name="download" size={18} />}
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button className="btn-primary" onClick={() => setShowCreate(true)}>
-            <Icon name="add_shopping_cart" size={18} /> Create Order
+            <Icon name="add_shopping_cart" size={18} />
+            <span className="hidden sm:inline">Create Order</span>
+            <span className="sm:hidden">New</span>
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="shopping_cart" fill size={24} className="text-primary" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="shopping_cart" fill size={20} className="text-primary" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">Total Orders</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1">{totalOrders}</h3>
-          </div>
-        </div>
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="pending" fill size={24} className="text-tertiary" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">Pending (page)</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1 text-tertiary">{pending}</h3>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">Total</p>
+            <h3 className="text-[22px] md:text-[28px] font-bold leading-none mt-1">{totalOrders}</h3>
           </div>
         </div>
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="check_circle" fill size={24} className="text-green-600" />
+        <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-tertiary/10 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="pending" fill size={20} className="text-tertiary" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">Completed (page)</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1 text-green-600">{completed}</h3>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">Pending</p>
+            <h3 className="text-[22px] md:text-[28px] font-bold leading-none mt-1 text-tertiary">{pending}</h3>
           </div>
         </div>
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-secondary-container/40 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="payments" fill size={24} className="text-secondary" />
+        <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="check_circle" fill size={20} className="text-green-600" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">Revenue (page)</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1">
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">Done</p>
+            <h3 className="text-[22px] md:text-[28px] font-bold leading-none mt-1 text-green-600">{completed}</h3>
+          </div>
+        </div>
+        <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-secondary-container/40 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="payments" fill size={20} className="text-secondary" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">Revenue</p>
+            <h3 className="text-[22px] md:text-[28px] font-bold leading-none mt-1">
               ₹{revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             </h3>
           </div>
@@ -381,25 +384,25 @@ export default function Orders() {
 
       {/* Table card */}
       <div className="card overflow-hidden">
-        <div className="px-6 py-4 border-b border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="px-4 md:px-6 py-4 border-b border-outline-variant flex flex-col gap-3">
+          <div className="flex items-center gap-3">
             <h3 className="text-[17px] font-semibold text-on-surface shrink-0">Order History</h3>
-            <div className="relative">
-              <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
-              {isSearchMode && searchLoading && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                </div>
-              )}
-              <input
-                className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-64 placeholder:text-outline"
-                placeholder="Search by customer or order ID…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
           </div>
-          <p className="text-xs text-outline whitespace-nowrap">
+          <div className="relative">
+            <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
+            {isSearchMode && searchLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            <input
+              className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-full sm:w-64 placeholder:text-outline"
+              placeholder="Search by customer or order ID…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <p className="text-xs text-outline">
             {isSearchMode
               ? `${displayed.length} result${displayed.length !== 1 ? 's' : ''} for "${search}"`
               : `${totalOrders} order${totalOrders !== 1 ? 's' : ''} total`}
@@ -421,33 +424,29 @@ export default function Orders() {
                       : 'No orders yet. Click Create Order to get started.'}
                   </div>
                 ) : (
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-surface-container-low">
-                        <th className="table-th">Order ID</th>
-                        <th className="table-th">Customer</th>
-                        <th className="table-th">Items</th>
-                        <th className="table-th text-right">Total</th>
-                        <th className="table-th">Status</th>
-                        <th className="table-th">Date</th>
-                        <th className="table-th text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-outline-variant">
+                  <>
+                    {/* Mobile card list */}
+                    <div className="block sm:hidden divide-y divide-outline-variant">
                       {displayed.map((o) => (
-                        <tr key={o.id} className="hover:bg-surface-container-lowest transition-colors group">
-                          <td className="table-td font-mono text-outline text-xs font-semibold">#{o.id}</td>
-                          <td className="table-td font-semibold text-on-surface">{o.customer?.full_name || '—'}</td>
-                          <td className="table-td text-on-surface-variant">{o.items.length} item{o.items.length !== 1 ? 's' : ''}</td>
-                          <td className="table-td text-right font-bold">₹{o.total_amount.toFixed(2)}</td>
-                          <td className="table-td"><StatusBadge status={o.status} /></td>
-                          <td className="table-td text-on-surface-variant text-xs">
-                            {new Date(o.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </td>
-                          <td className="table-td text-center">
-                            <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div key={o.id} className="px-4 py-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                <span className="font-mono text-xs font-semibold text-outline">#{o.id}</span>
+                                <StatusBadge status={o.status} />
+                              </div>
+                              <p className="font-semibold text-on-surface text-sm">{o.customer?.full_name || '—'}</p>
+                              <p className="text-xs text-on-surface-variant mt-0.5">
+                                {new Date(o.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                {' · '}
+                                {o.items.length} item{o.items.length !== 1 ? 's' : ''}
+                                {' · '}
+                                <span className="font-semibold text-on-surface">₹{o.total_amount.toFixed(2)}</span>
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
                               <button
-                                className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
+                                className="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
                                 onClick={() => handleView(o.id)}
                                 title="View details"
                               >
@@ -455,7 +454,7 @@ export default function Orders() {
                               </button>
                               {o.status === 'pending' && (
                                 <button
-                                  className="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition-colors"
+                                  className="p-2 hover:bg-green-100 rounded-lg text-green-600 transition-colors"
                                   onClick={() => handleComplete(o.id)}
                                   title="Mark as completed"
                                 >
@@ -463,18 +462,73 @@ export default function Orders() {
                                 </button>
                               )}
                               <button
-                                className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
+                                className="p-2 hover:bg-error-container/30 rounded-lg text-error transition-colors"
                                 onClick={() => setDeleteTarget(o)}
                                 title="Cancel order"
                               >
                                 <Icon name="cancel" size={18} />
                               </button>
                             </div>
-                          </td>
-                        </tr>
+                          </div>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                    {/* Desktop table */}
+                    <table className="hidden sm:table w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-surface-container-low">
+                          <th className="table-th">Order ID</th>
+                          <th className="table-th">Customer</th>
+                          <th className="table-th">Items</th>
+                          <th className="table-th text-right">Total</th>
+                          <th className="table-th">Status</th>
+                          <th className="table-th">Date</th>
+                          <th className="table-th text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant">
+                        {displayed.map((o) => (
+                          <tr key={o.id} className="hover:bg-surface-container-lowest transition-colors group">
+                            <td className="table-td font-mono text-outline text-xs font-semibold">#{o.id}</td>
+                            <td className="table-td font-semibold text-on-surface">{o.customer?.full_name || '—'}</td>
+                            <td className="table-td text-on-surface-variant">{o.items.length} item{o.items.length !== 1 ? 's' : ''}</td>
+                            <td className="table-td text-right font-bold">₹{o.total_amount.toFixed(2)}</td>
+                            <td className="table-td"><StatusBadge status={o.status} /></td>
+                            <td className="table-td text-on-surface-variant text-xs">
+                              {new Date(o.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </td>
+                            <td className="table-td text-center">
+                              <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
+                                  onClick={() => handleView(o.id)}
+                                  title="View details"
+                                >
+                                  <Icon name="visibility" size={18} />
+                                </button>
+                                {o.status === 'pending' && (
+                                  <button
+                                    className="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition-colors"
+                                    onClick={() => handleComplete(o.id)}
+                                    title="Mark as completed"
+                                  >
+                                    <Icon name="check_circle" size={18} />
+                                  </button>
+                                )}
+                                <button
+                                  className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
+                                  onClick={() => setDeleteTarget(o)}
+                                  title="Cancel order"
+                                >
+                                  <Icon name="cancel" size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
                 )}
               </div>
               {paging && (

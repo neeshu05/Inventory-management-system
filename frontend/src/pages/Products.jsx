@@ -19,13 +19,13 @@ function StockBadge({ quantity }) {
 
 function StatCard({ label, value, icon, iconBg, iconColor, valueColor = 'text-on-surface' }) {
   return (
-    <div className="card p-6 flex items-center gap-4">
-      <div className={`w-12 h-12 ${iconBg} rounded-lg flex items-center justify-center shrink-0`}>
-        <Icon name={icon} fill size={24} className={iconColor} />
+    <div className="card p-4 md:p-6 flex items-center gap-3 md:gap-4">
+      <div className={`w-10 h-10 md:w-12 md:h-12 ${iconBg} rounded-lg flex items-center justify-center shrink-0`}>
+        <Icon name={icon} fill size={20} className={iconColor} />
       </div>
-      <div>
-        <p className="text-xs font-semibold text-outline uppercase tracking-wider">{label}</p>
-        <h3 className={`text-[28px] font-bold leading-none mt-1 ${valueColor}`}>{value}</h3>
+      <div className="min-w-0">
+        <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">{label}</p>
+        <h3 className={`text-[22px] md:text-[28px] font-bold leading-none mt-1 ${valueColor}`}>{value}</h3>
       </div>
     </div>
   )
@@ -44,7 +44,7 @@ function ProductForm({ initial = emptyForm, onSubmit, onCancel, saving }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="label">Product Name *</label>
           <input className="input" value={form.name} onChange={set('name')} required placeholder="e.g. Laptop Pro" />
@@ -231,29 +231,32 @@ export default function Products() {
   const tableLoading = loading || (isSearchMode && searchLoading && searchResults === null)
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-display-md font-bold text-on-surface">Product Inventory</h2>
-          <p className="text-sm text-on-surface-variant mt-1">Manage and track your warehouse stock levels in real-time.</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-display-md font-bold text-on-surface truncate">Products</h2>
+          <p className="text-sm text-on-surface-variant mt-0.5 hidden sm:block">Manage and track your warehouse stock levels in real-time.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="btn-secondary" onClick={() => setShowImport(true)}>
-            <Icon name="upload_file" size={18} /> Import CSV
+        <div className="flex items-center gap-2 shrink-0">
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={() => setShowImport(true)}>
+            <Icon name="upload_file" size={18} />
+            <span className="hidden sm:inline">Import CSV</span>
           </button>
-          <button className="btn-secondary" onClick={handleExport} disabled={exporting}>
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={handleExport} disabled={exporting}>
             {exporting ? <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" /> : <Icon name="download" size={18} />}
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button className="btn-primary" onClick={() => setModal('add')}>
-            <Icon name="add" size={18} /> Add Product
+            <Icon name="add" size={18} />
+            <span className="hidden sm:inline">Add Product</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard label="Total Products" value={statTotal}  icon="inventory_2"    iconBg="bg-primary/10"             iconColor="text-primary" />
         <StatCard label="Low Stock"      value={statLow}    icon="warning"        iconBg="bg-tertiary/10"            iconColor="text-tertiary"   valueColor="text-tertiary" />
         <StatCard label="Out of Stock"   value={statOut}    icon="block"          iconBg="bg-error-container/40"     iconColor="text-error"      valueColor="text-error" />
@@ -263,9 +266,9 @@ export default function Products() {
       {/* Table card */}
       <div className="card overflow-hidden">
         {/* Filters row */}
-        <div className="px-6 py-4 border-b border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="px-4 md:px-6 py-4 border-b border-outline-variant flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-none">
               <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
               {isSearchMode && searchLoading && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -273,8 +276,8 @@ export default function Products() {
                 </div>
               )}
               <input
-                className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-64 placeholder:text-outline"
-                placeholder="Search products by name or SKU…"
+                className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-full sm:w-64 placeholder:text-outline"
+                placeholder="Search by name or SKU…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -298,7 +301,7 @@ export default function Products() {
               </button>
             )}
           </div>
-          <p className="text-xs text-outline whitespace-nowrap">
+          <p className="text-xs text-outline">
             {isSearchMode
               ? `${filtered.length} result${filtered.length !== 1 ? 's' : ''} for "${search}"`
               : `${filtered.length} product${filtered.length !== 1 ? 's' : ''} on this page`}
@@ -323,51 +326,91 @@ export default function Products() {
                       : 'No products yet. Click Add Product to get started.'}
                   </div>
                 ) : (
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-surface-container-low">
-                        <th className="table-th">SKU</th>
-                        <th className="table-th">Product Name</th>
-                        <th className="table-th">Description</th>
-                        <th className="table-th">Stock Level</th>
-                        <th className="table-th">Status</th>
-                        <th className="table-th text-right">Unit Price</th>
-                        <th className="table-th text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-outline-variant">
+                  <>
+                    {/* Mobile card list */}
+                    <div className="block sm:hidden divide-y divide-outline-variant">
                       {filtered.map((p) => (
-                        <tr key={p.id} className="hover:bg-surface-container-lowest transition-colors group">
-                          <td className="table-td font-semibold text-outline font-mono text-xs">{p.sku}</td>
-                          <td className="table-td"><p className="font-semibold text-on-surface">{p.name}</p></td>
-                          <td className="table-td text-on-surface-variant max-w-[200px] truncate">{p.description || '—'}</td>
-                          <td className={`table-td font-bold ${p.quantity === 0 ? 'text-error' : 'text-on-surface'}`}>
-                            {p.quantity} units
-                          </td>
-                          <td className="table-td"><StockBadge quantity={p.quantity} /></td>
-                          <td className="table-td text-right font-semibold">₹{p.price.toFixed(2)}</td>
-                          <td className="table-td text-center">
-                            <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
-                                onClick={() => setModal({ type: 'edit', product: p })}
-                                title="Edit"
-                              >
-                                <Icon name="edit" size={18} />
-                              </button>
-                              <button
-                                className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
-                                onClick={() => setDeleteTarget(p)}
-                                title="Delete"
-                              >
-                                <Icon name="delete" size={18} />
-                              </button>
+                        <div key={p.id} className="px-4 py-3 flex items-center gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                              <p className="font-semibold text-on-surface text-sm">{p.name}</p>
+                              <StockBadge quantity={p.quantity} />
                             </div>
-                          </td>
-                        </tr>
+                            <p className="text-xs font-mono text-outline">{p.sku}</p>
+                            <div className="flex items-center gap-2 mt-1 text-sm">
+                              <span className="font-semibold text-on-surface">₹{p.price.toFixed(2)}</span>
+                              <span className="text-outline">·</span>
+                              <span className={p.quantity === 0 ? 'text-error font-bold' : 'text-on-surface-variant'}>
+                                {p.quantity} units
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              className="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
+                              onClick={() => setModal({ type: 'edit', product: p })}
+                              title="Edit"
+                            >
+                              <Icon name="edit" size={18} />
+                            </button>
+                            <button
+                              className="p-2 hover:bg-error-container/30 rounded-lg text-error transition-colors"
+                              onClick={() => setDeleteTarget(p)}
+                              title="Delete"
+                            >
+                              <Icon name="delete" size={18} />
+                            </button>
+                          </div>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                    {/* Desktop table */}
+                    <table className="hidden sm:table w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-surface-container-low">
+                          <th className="table-th">SKU</th>
+                          <th className="table-th">Product Name</th>
+                          <th className="table-th">Description</th>
+                          <th className="table-th">Stock Level</th>
+                          <th className="table-th">Status</th>
+                          <th className="table-th text-right">Unit Price</th>
+                          <th className="table-th text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant">
+                        {filtered.map((p) => (
+                          <tr key={p.id} className="hover:bg-surface-container-lowest transition-colors group">
+                            <td className="table-td font-semibold text-outline font-mono text-xs">{p.sku}</td>
+                            <td className="table-td"><p className="font-semibold text-on-surface">{p.name}</p></td>
+                            <td className="table-td text-on-surface-variant max-w-[200px] truncate">{p.description || '—'}</td>
+                            <td className={`table-td font-bold ${p.quantity === 0 ? 'text-error' : 'text-on-surface'}`}>
+                              {p.quantity} units
+                            </td>
+                            <td className="table-td"><StockBadge quantity={p.quantity} /></td>
+                            <td className="table-td text-right font-semibold">₹{p.price.toFixed(2)}</td>
+                            <td className="table-td text-center">
+                              <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
+                                  onClick={() => setModal({ type: 'edit', product: p })}
+                                  title="Edit"
+                                >
+                                  <Icon name="edit" size={18} />
+                                </button>
+                                <button
+                                  className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
+                                  onClick={() => setDeleteTarget(p)}
+                                  title="Delete"
+                                >
+                                  <Icon name="delete" size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
                 )}
               </div>
               {paging && (

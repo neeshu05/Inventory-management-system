@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import Sidebar from './Sidebar'
+import BottomNav from './BottomNav'
 import Icon from './Icon'
 import { searchProducts } from '../services/products'
 
@@ -12,7 +13,7 @@ function StockBadge({ quantity }) {
   return <span className="badge-green">In Stock</span>
 }
 
-function SearchBar() {
+function SearchBar({ autoFocus = false, onClose }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [open, setOpen] = useState(false)
@@ -47,19 +48,24 @@ function SearchBar() {
   }
 
   const handleKey = (e) => {
-    if (e.key === 'Escape') { setOpen(false); setQuery('') }
+    if (e.key === 'Escape') {
+      setOpen(false)
+      setQuery('')
+      onClose?.()
+    }
   }
 
-  // Navigate to Products and open the item in edit mode
   const handleSelect = (p) => {
     setOpen(false)
     setQuery('')
+    onClose?.()
     navigate('/products', { state: { editProduct: p } })
   }
 
   const handleViewAll = () => {
     setOpen(false)
     setQuery('')
+    onClose?.()
     navigate('/products')
   }
 
@@ -78,6 +84,7 @@ function SearchBar() {
         onKeyDown={handleKey}
         onFocus={() => results.length > 0 && setOpen(true)}
         placeholder="Search products by name or SKU…"
+        autoFocus={autoFocus}
         className="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline"
       />
 
@@ -129,6 +136,7 @@ function SearchBar() {
 }
 
 function Header() {
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const { logout } = useAuth()
   const navigate = useNavigate()
 
@@ -139,16 +147,57 @@ function Header() {
   }
 
   return (
-    <header className="h-16 sticky top-0 bg-surface border-b border-outline-variant/40 flex items-center justify-between px-8 z-40">
-      <SearchBar />
-      <div className="flex items-center gap-2 ml-6">
-        <div className="h-8 w-px bg-outline-variant" />
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 text-primary font-bold text-xs tracking-wider uppercase hover:bg-surface-container-low rounded-lg transition-all active:scale-95"
-        >
-          Logout
-        </button>
+    <header className="sticky top-0 bg-surface border-b border-outline-variant/40 z-40">
+      {/* Desktop */}
+      <div className="hidden md:flex h-16 items-center justify-between px-8">
+        <SearchBar />
+        <div className="flex items-center gap-2 ml-6">
+          <div className="h-8 w-px bg-outline-variant" />
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 text-primary font-bold text-xs tracking-wider uppercase hover:bg-surface-container-low rounded-lg transition-all active:scale-95"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile */}
+      <div className="flex md:hidden h-14 items-center px-4 gap-2">
+        {mobileSearchOpen ? (
+          <>
+            <button
+              onClick={() => setMobileSearchOpen(false)}
+              className="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors shrink-0"
+            >
+              <Icon name="arrow_back" size={22} />
+            </button>
+            <div className="flex-1">
+              <SearchBar autoFocus onClose={() => setMobileSearchOpen(false)} />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center shrink-0">
+                <Icon name="inventory_2" fill size={16} className="text-white" />
+              </div>
+              <span className="font-bold text-on-surface text-[15px] truncate">InvenTrack</span>
+            </div>
+            <button
+              onClick={() => setMobileSearchOpen(true)}
+              className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+            >
+              <Icon name="search" size={22} />
+            </button>
+            <button
+              onClick={handleLogout}
+              className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+            >
+              <Icon name="logout" size={22} />
+            </button>
+          </>
+        )}
       </div>
     </header>
   )
@@ -158,12 +207,13 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="ml-sidebar-width flex-1 flex flex-col min-h-screen">
+      <div className="md:ml-sidebar-width flex-1 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 pb-16 md:pb-0">
           <Outlet />
         </main>
       </div>
+      <BottomNav />
     </div>
   )
 }

@@ -180,61 +180,64 @@ export default function Customers() {
   const tableLoading = loading || (isSearchMode && searchLoading && searchResults === null)
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-display-md font-bold text-on-surface">Customers</h2>
-          <p className="text-sm text-on-surface-variant mt-1">Manage your customer directory and contact information.</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-display-md font-bold text-on-surface truncate">Customers</h2>
+          <p className="text-sm text-on-surface-variant mt-0.5 hidden sm:block">Manage your customer directory and contact information.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="btn-secondary" onClick={() => setShowImport(true)}>
-            <Icon name="upload_file" size={18} /> Import CSV
+        <div className="flex items-center gap-2 shrink-0">
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={() => setShowImport(true)}>
+            <Icon name="upload_file" size={18} />
+            <span className="hidden sm:inline">Import CSV</span>
           </button>
-          <button className="btn-secondary" onClick={handleExport} disabled={exporting}>
+          <button className="btn-secondary px-2.5 sm:px-4" onClick={handleExport} disabled={exporting}>
             {exporting ? <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" /> : <Icon name="download" size={18} />}
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button className="btn-primary" onClick={() => setAddOpen(true)}>
-            <Icon name="person_add" size={18} /> Add Customer
+            <Icon name="person_add" size={18} />
+            <span className="hidden sm:inline">Add Customer</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="group" fill size={24} className="text-primary" />
+      <div className="grid grid-cols-3 gap-3 md:gap-6">
+        <div className="card p-3 md:p-6 flex items-center gap-2 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="group" fill size={18} className="text-primary" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">Total Customers</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1 text-on-surface">{totalCustomers}</h3>
-          </div>
-        </div>
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-secondary-container/40 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="person_check" fill size={24} className="text-secondary" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">With Phone (page)</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1 text-on-surface">{withPhone}</h3>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">Total</p>
+            <h3 className="text-[20px] md:text-[28px] font-bold leading-none mt-0.5 text-on-surface">{totalCustomers}</h3>
           </div>
         </div>
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center shrink-0">
-            <Icon name="shopping_cart" fill size={24} className="text-tertiary" />
+        <div className="card p-3 md:p-6 flex items-center gap-2 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 bg-secondary-container/40 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="person_check" fill size={18} className="text-secondary" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-wider">This Month (page)</p>
-            <h3 className="text-[28px] font-bold leading-none mt-1 text-on-surface">{thisMonth}</h3>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">With Phone</p>
+            <h3 className="text-[20px] md:text-[28px] font-bold leading-none mt-0.5 text-on-surface">{withPhone}</h3>
+          </div>
+        </div>
+        <div className="card p-3 md:p-6 flex items-center gap-2 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 bg-tertiary/10 rounded-lg flex items-center justify-center shrink-0">
+            <Icon name="shopping_cart" fill size={18} className="text-tertiary" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-semibold text-outline uppercase tracking-wider leading-tight">This Month</p>
+            <h3 className="text-[20px] md:text-[28px] font-bold leading-none mt-0.5 text-on-surface">{thisMonth}</h3>
           </div>
         </div>
       </div>
 
       {/* Table card */}
       <div className="card overflow-hidden">
-        <div className="px-6 py-4 border-b border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="px-4 md:px-6 py-4 border-b border-outline-variant flex flex-col gap-3">
           <div className="relative">
             <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             {isSearchMode && searchLoading && (
@@ -243,13 +246,13 @@ export default function Customers() {
               </div>
             )}
             <input
-              className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-72 placeholder:text-outline"
+              className="pl-9 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all w-full sm:w-72 placeholder:text-outline"
               placeholder="Search by name, email or phone…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <p className="text-xs text-outline whitespace-nowrap">
+          <p className="text-xs text-outline">
             {isSearchMode
               ? `${displayed.length} result${displayed.length !== 1 ? 's' : ''} for "${search}"`
               : `${displayed.length} customer${displayed.length !== 1 ? 's' : ''} on this page`}
@@ -271,45 +274,70 @@ export default function Customers() {
                       : 'No customers yet. Click Add Customer to get started.'}
                   </div>
                 ) : (
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-surface-container-low">
-                        <th className="table-th">Customer</th>
-                        <th className="table-th">Email</th>
-                        <th className="table-th">Phone</th>
-                        <th className="table-th">Registered</th>
-                        <th className="table-th text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-outline-variant">
+                  <>
+                    {/* Mobile card list */}
+                    <div className="block sm:hidden divide-y divide-outline-variant">
                       {displayed.map((c) => (
-                        <tr key={c.id} className="hover:bg-surface-container-lowest transition-colors group">
-                          <td className="table-td">
-                            <div className="flex items-center gap-3">
-                              <Avatar name={c.full_name} />
-                              <span className="font-semibold text-on-surface">{c.full_name}</span>
-                            </div>
-                          </td>
-                          <td className="table-td text-on-surface-variant">{c.email}</td>
-                          <td className="table-td text-on-surface-variant">{c.phone || <span className="text-outline">—</span>}</td>
-                          <td className="table-td text-on-surface-variant text-xs">
-                            {c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                          </td>
-                          <td className="table-td text-center">
-                            <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
-                                onClick={() => setDeleteTarget(c)}
-                                title="Delete"
-                              >
-                                <Icon name="delete" size={18} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                        <div key={c.id} className="px-4 py-3 flex items-center gap-3">
+                          <Avatar name={c.full_name} />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-on-surface text-sm truncate">{c.full_name}</p>
+                            <p className="text-xs text-on-surface-variant truncate">{c.email}</p>
+                            <p className="text-xs text-outline mt-0.5">
+                              {c.phone || '—'} · {c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                            </p>
+                          </div>
+                          <button
+                            className="p-2 hover:bg-error-container/30 rounded-lg text-error transition-colors shrink-0"
+                            onClick={() => setDeleteTarget(c)}
+                            title="Delete"
+                          >
+                            <Icon name="delete" size={18} />
+                          </button>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                    {/* Desktop table */}
+                    <table className="hidden sm:table w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-surface-container-low">
+                          <th className="table-th">Customer</th>
+                          <th className="table-th">Email</th>
+                          <th className="table-th">Phone</th>
+                          <th className="table-th">Registered</th>
+                          <th className="table-th text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant">
+                        {displayed.map((c) => (
+                          <tr key={c.id} className="hover:bg-surface-container-lowest transition-colors group">
+                            <td className="table-td">
+                              <div className="flex items-center gap-3">
+                                <Avatar name={c.full_name} />
+                                <span className="font-semibold text-on-surface">{c.full_name}</span>
+                              </div>
+                            </td>
+                            <td className="table-td text-on-surface-variant">{c.email}</td>
+                            <td className="table-td text-on-surface-variant">{c.phone || <span className="text-outline">—</span>}</td>
+                            <td className="table-td text-on-surface-variant text-xs">
+                              {c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                            </td>
+                            <td className="table-td text-center">
+                              <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  className="p-1.5 hover:bg-error-container/30 rounded-lg text-error transition-colors"
+                                  onClick={() => setDeleteTarget(c)}
+                                  title="Delete"
+                                >
+                                  <Icon name="delete" size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
                 )}
               </div>
               {paging && (
