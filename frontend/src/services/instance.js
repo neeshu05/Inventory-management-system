@@ -17,7 +17,7 @@ api.interceptors.response.use(
   async (err) => {
     const original = err.config
 
-    if (err.response?.status === 401 && original.url !== '/auth/refresh' && !original._retry) {
+    if (err.response?.status === 401 && original.url !== '/auth/refresh' && original.url !== '/auth/login' && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           pendingQueue.push({ resolve, reject })

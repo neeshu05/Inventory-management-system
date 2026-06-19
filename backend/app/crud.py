@@ -10,8 +10,14 @@ from . import models, schemas
 
 # ── Products ──────────────────────────────────────────────────────────────────
 
-def get_products(db: Session, user_id: int, cursor: Optional[int] = None, limit: int = 10) -> dict:
+def get_products(db: Session, user_id: int, cursor: Optional[int] = None, limit: int = 10, status: Optional[str] = None) -> dict:
     q = db.query(models.Product).filter(models.Product.owner_id == user_id)
+    if status == 'in_stock':
+        q = q.filter(models.Product.quantity > 10)
+    elif status == 'low_stock':
+        q = q.filter(models.Product.quantity > 0, models.Product.quantity <= 10)
+    elif status == 'out_of_stock':
+        q = q.filter(models.Product.quantity == 0)
     if cursor:
         q = q.filter(models.Product.id > cursor)
     rows = q.order_by(models.Product.id).limit(limit + 1).all()

@@ -26,10 +26,11 @@ def search_products(
 def list_products(
     cursor: Optional[int] = None,
     limit: int = 10,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    return crud.get_products(db=db, user_id=current_user.id, cursor=cursor, limit=limit)
+    return crud.get_products(db=db, user_id=current_user.id, cursor=cursor, limit=limit, status=status)
 
 
 @router.post("/bulk", response_model=schemas.BulkResult)

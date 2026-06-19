@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import * as XLSX from 'xlsx'
 import toast from 'react-hot-toast'
@@ -97,15 +97,16 @@ export default function Products() {
   const debouncedSearch = useDebounce(search, 350)
 
   const [statusFilter, setStatusFilter] = useState('all')
+  const isFirstRender = useRef(true)
   const [dashStats, setDashStats] = useState(null)
   const [modal, setModal] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [showImport, setShowImport] = useState(false)
 
-  const loadPage = (cur = null, paginate = false) => {
+  const loadPage = (cur = null, paginate = false, status = statusFilter) => {
     if (paginate) setPaging(true)
     else setLoading(true)
-    return getProducts(cur, PAGE_LIMIT)
+    return getProducts(cur, PAGE_LIMIT, status)
       .then((r) => {
         setItems(r.data.items)
         setNextCursor(r.data.next_cursor)
@@ -118,7 +119,15 @@ export default function Products() {
   const loadStats = () =>
     getDashboardStats().then((r) => setDashStats(r.data)).catch(() => {})
 
-  useEffect(() => { loadPage(null); loadStats() }, [])
+  useEffect(() => { loadPage(null, false, statusFilter); loadStats() }, [])
+
+  // Re-fetch from page 1 when status filter changes (skip initial mount)
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return }
+    setCursorStack([])
+    setCursor(null)
+    loadPage(null, false, statusFilter)
+  }, [statusFilter]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Open in edit mode when navigated from global search
   useEffect(() => {
@@ -142,7 +151,7 @@ export default function Products() {
   const goNext = () => {
     setCursorStack((s) => [...s, cursor])
     setCursor(nextCursor)
-    loadPage(nextCursor, true)
+    loadPage(nextCursor, true, statusFilter)
   }
 
   const goPrev = () => {
@@ -150,7 +159,7 @@ export default function Products() {
     const prev = stack.pop() ?? null
     setCursorStack(stack)
     setCursor(prev)
-    loadPage(prev, true)
+    loadPage(prev, true, statusFilter)
   }
 
   const reload = () => {
@@ -158,25 +167,17 @@ export default function Products() {
     setCursor(null)
     setSearch('')
     setSearchResults(null)
-    loadPage(null)
+    loadPage(null, false, statusFilter)
     loadStats()
   }
 
   const isSearchMode = search.trim().length > 0
+  const filtered = isSearchMode ? (searchResults ?? []) : items
 
-  const filtered = useMemo(() => {
-    const base = isSearchMode ? (searchResults ?? []) : items
-    if (statusFilter === 'in_stock') return base.filter((p) => p.quantity > 10)
-    if (statusFilter === 'low_stock') return base.filter((p) => p.quantity > 0 && p.quantity <= 10)
-    if (statusFilter === 'out_of_stock') return base.filter((p) => p.quantity === 0)
-    return base
-  }, [isSearchMode, searchResults, items, statusFilter])
-
-  const lowStockItems = dashStats?.low_stock_products ?? []
-  const statTotal    = dashStats?.total_products ?? 0
-  const statLow      = lowStockItems.filter((p) => p.quantity > 0).length
-  const statOut      = lowStockItems.filter((p) => p.quantity === 0).length
-  const pageValue    = items.reduce((s, p) => s + p.price * p.quantity, 0)
+  const statTotal = dashStats?.total_products ?? 0
+  const statLow   = dashStats?.low_stock_count ?? 0
+  const statOut   = dashStats?.out_of_stock_count ?? 0
+  const pageValue = items.reduce((s, p) => s + p.price * p.quantity, 0)
 
   const handleAdd = async (data) => {
     setSaving(true)
@@ -197,14 +198,17 @@ export default function Products() {
     catch (e) { toast.error(e.message) }
   }
 
-  const clearFilters = () => { setSearch(''); setStatusFilter('all') }
+  const clearFilters = () => {
+    setSearch('')
+    if (statusFilter !== 'all') setStatusFilter('all')
+  }
 
   const handleExport = async () => {
     setExporting(true)
     try {
       let all = [], cur = null
       do {
-        const r = await getProducts(cur, 200)
+        const r = await getProducts(cur, 200, statusFilter)
         all = [...all, ...r.data.items]
         cur = r.data.has_more ? r.data.next_cursor : null
       } while (cur)

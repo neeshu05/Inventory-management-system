@@ -1,7 +1,7 @@
 import api from './instance'
 
-export const getProducts = (cursor = null, limit = 10) =>
-  api.get('/products/', { params: { ...(cursor ? { cursor } : {}), limit } })
+export const getProducts = (cursor = null, limit = 10, status = null) =>
+  api.get('/products/', { params: { ...(cursor ? { cursor } : {}), limit, ...(status && status !== 'all' ? { status } : {}) } })
 
 export const searchProducts = (q, limit = 20) => 
   api.get('/products/search', { params: { q, limit } })
