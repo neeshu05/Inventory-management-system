@@ -65,8 +65,9 @@ class TestGetProduct:
         assert auth_client.get("/products/99999").status_code == 404
 
     def test_cannot_access_another_users_product(self, client, db, product):
-        client.post("/auth/register", json={"username": "user2", "email": "u2@t.com", "password": "Pass123"})
-        client.post("/auth/login", json={"username": "user2", "password": "Pass123"})
+        resp = client.post("/auth/register", json={"username": "user2", "email": "u2@t.com", "password": "Pass123"})
+        token = resp.json()["access_token"]
+        client.headers.update({"Authorization": f"Bearer {token}"})
         assert client.get(f"/products/{product.id}").status_code == 404
 
 

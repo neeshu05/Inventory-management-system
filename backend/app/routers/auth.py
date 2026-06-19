@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -7,33 +7,22 @@ from ..auth import (
     hash_password, verify_password,
     create_access_token, create_refresh_token,
     verify_refresh_token, get_current_user,
-    ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS,
 )
 from ..database import get_db
 
 router = APIRouter()
 
-# SameSite=none + Secure=True required for cross-origin cookies (Vercel → Render)
-_COOKIE = dict(httponly=True, samesite="none", secure=True, path="/")
 
-
-def _set_auth_cookies(response: Response, username: str) -> None:
-    response.set_cookie(
-        key="access_token",
-        value=create_access_token(username),
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        **_COOKIE,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=create_refresh_token(username),
-        max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        **_COOKIE,
-    )
+def _make_auth_response(user: models.User) -> dict:
+    return {
+        "user": user,
+        "access_token": create_access_token(user.username),
+        "refresh_token": create_refresh_token(user.username),
+    }
 
 
 @router.post("/register", response_model=schemas.AuthResponse, status_code=201)
-def register(payload: schemas.UserRegister, response: Response, db: Session = Depends(get_db)):
+def register(payload: schemas.UserRegister, db: Session = Depends(get_db)):
     hashed = hash_password(payload.password)
     user = models.User(
         username=payload.username.strip(),
@@ -48,43 +37,38 @@ def register(payload: schemas.UserRegister, response: Response, db: Session = De
         db.rollback()
         raise HTTPException(status_code=400, detail="Username or email already taken")
 
-    _set_auth_cookies(response, user.username)
-    return {"user": user}
+    return _make_auth_response(user)
 
 
 @router.post("/login", response_model=schemas.AuthResponse)
-def login(payload: schemas.UserLogin, response: Response, db: Session = Depends(get_db)):
+def login(payload: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == payload.username).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
-    _set_auth_cookies(response, user.username)
-    return {"user": user}
+    return _make_auth_response(user)
 
 
-@router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/")
-    return {"message": "Logged out"}
-
-
-@router.post("/refresh", response_model=schemas.AuthResponse)
-def refresh_tokens(request: Request, response: Response, db: Session = Depends(get_db)):
-    token = request.cookies.get("refresh_token")
-    if not token:
-        raise HTTPException(status_code=401, detail="No refresh token")
-    username = verify_refresh_token(token)
+@router.post("/refresh", response_model=schemas.RefreshResponse)
+def refresh_tokens(payload: schemas.RefreshRequest, db: Session = Depends(get_db)):
+    username = verify_refresh_token(payload.refresh_token)
     if not username:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     user = db.query(models.User).filter(models.User.username == username).first()
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="User not found")
 
-    _set_auth_cookies(response, user.username)
-    return {"user": user}
+    return {
+        "access_token": create_access_token(user.username),
+        "refresh_token": create_refresh_token(user.username),
+    }
+
+
+@router.post("/logout")
+def logout():
+    return {"message": "Logged out"}
 
 
 @router.get("/me", response_model=schemas.UserResponse)

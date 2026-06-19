@@ -7,20 +7,24 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // On mount, validate session via cookie — no localStorage involved
   useEffect(() => {
     getMe()
       .then((res) => setUser(res.data))
-      .catch(() => {}) // 401 interceptor handles redirect if both tokens are expired
+      .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  // Called after login/register — backend has already set the cookies
-  const login = (userData) => setUser(userData)
+  const login = (userData, accessToken, refreshToken) => {
+    localStorage.setItem('access_token', accessToken)
+    localStorage.setItem('refresh_token', refreshToken)
+    setUser(userData)
+  }
 
   const logout = async () => {
-    setUser(null) // clear user state immediately
-    try { await logoutApi() } catch {} // clear cookies on server
+    setUser(null)
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    try { await logoutApi() } catch {}
   }
 
   return (

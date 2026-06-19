@@ -20,7 +20,7 @@ export default function Register() {
     setLoading(true)
     try {
       const res = await register({ username: form.username, email: form.email, password: form.password })
-      login(res.data.user)
+      login(res.data.user, res.data.access_token, res.data.refresh_token)
       toast.success('Account created! Welcome.')
       navigate('/')
     } catch (err) {

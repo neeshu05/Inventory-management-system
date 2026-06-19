@@ -79,9 +79,11 @@ def test_user(db):
 
 @pytest.fixture
 def auth_client(client, test_user):
-    """TestClient already logged in as test_user (auth cookies set)."""
+    """TestClient already logged in as test_user (Authorization header set)."""
     resp = client.post("/auth/login", json={"username": "testuser", "password": "Password123"})
     assert resp.status_code == 200, f"Login failed: {resp.text}"
+    token = resp.json()["access_token"]
+    client.headers.update({"Authorization": f"Bearer {token}"})
     return client
 
 

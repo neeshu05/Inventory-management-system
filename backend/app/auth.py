@@ -60,7 +60,8 @@ def get_current_user(
     request: Request,
     db: Session = Depends(get_db),
 ) -> models.User:
-    token = request.cookies.get("access_token")
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header[7:] if auth_header.startswith("Bearer ") else None
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -48,6 +48,15 @@ class Token(BaseModel):
 
 class AuthResponse(BaseModel):
     user: UserResponse
+    access_token: str
+    refresh_token: str
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    refresh_token: str
 
 
 # ── Product ──────────────────────────────────────────────────────────────────
