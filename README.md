@@ -2,7 +2,11 @@
 
 A full-stack, multi-tenant inventory management system built with FastAPI, React, and PostgreSQL. Each user account is fully isolated — users can only see and manage their own products, customers, and orders.
 
-**Live demo:** [inventory-management-system-five-lake.vercel.app](https://inventory-management-system-five-lake.vercel.app)
+**Live demo:** [inventory-management-system-five-lake.vercel.app](https://inventory-management-system-five-lake.vercel.app)  
+**Docker Hub:** [hub.docker.com/r/neeshu05/inventory-backend](https://hub.docker.com/r/neeshu05/inventory-backend)
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/neeshu05/inventory-backend)](https://hub.docker.com/r/neeshu05/inventory-backend)
+[![Docker Image Size](https://img.shields.io/docker/image-size/neeshu05/inventory-backend/latest)](https://hub.docker.com/r/neeshu05/inventory-backend)
 
 ---
 
@@ -323,6 +327,25 @@ docker compose up --build
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API docs: http://localhost:8000/docs
+
+---
+
+## Pull from Docker Hub
+
+```bash
+docker pull neeshu05/inventory-backend:latest
+```
+
+Run standalone (you provide an external PostgreSQL):
+
+```bash
+docker run -d \
+  -e DATABASE_URL=postgresql://user:password@host:5432/inventory_db \
+  -e SECRET_KEY=your-secret-key-min-32-chars \
+  -e CORS_ORIGINS=http://localhost:5173 \
+  -p 8000:8000 \
+  neeshu05/inventory-backend:latest
+```
 
 ---
 
